@@ -12,14 +12,6 @@
       padding: 20px;
       font-size: 2em;
     }
-
-    .can {
-      color: green;
-    }
-
-    .cant {
-      color: red;
-    }
   </style>
   <script src="https://unpkg.com/vue@3.4.0"></script>
 </head>
@@ -27,45 +19,62 @@
 <body>
   <div id="app">
     <div>
-      <div>
-        <label>Enter your age:</label>
-        <input v-model="age" />
-      </div>
-      <div>{{message}}</div>
-      <div>Can you drive: <span :class="{'can': canDrive === 'Yes', cant: canDrive === 'No'}">{{canDrive}}</span></div>
+      Vue
+      {{message}}
+      {{appendItems}}
+      <input type="number" name="age" v-model="age" />  <span>type age</span>
+      <p :class="changeColor">{{canDrink}}</p>
+      <p :class="changeColor">{{message}}</p>
+      <input type="checkbox" name="color?" v-model="color" id="">
+      <span>add color?</span>
     </div>
   </div>
   <script>
-    const { createApp, ref, computed } = Vue;
+    const { createApp, ref,computed } = Vue;
     const App = {
-      setup() {
-        let message = ref('Hello');
-        let age = ref(null);
-        let canDrive = computed(
-          () => {
-            console.log('Computed!');
-            return age.value >= 18 ? 'Yes' : 'No';
+       setup() {
+        const age = ref(18)
+        const canDrink = computed(()=>{
+          if(age.value >=21){
+            return true;
           }
-        );
-
-        setTimeout(
-          () => {
-            console.log('Changed!');
-            message.value = 'Bye!';
-            age.value = 24;
-          },
-          5000
-        )
-
-        return {
-          message,
-          canDrive,
-          age
+          return false
+        })
+        const message = ref('world');
+        const color = ref(true)
+        const changeColor = computed(()=>{
+          if(color.value === true && canDrink.value === false){
+            return 'text-red'
+          }
+          else if(canDrink.value == true && color.value === true){
+            return 'text-green'
+          }
+          return ''
+       })
+        const appendItems = computed(()=>{
+          if (message.value === 'world'){
+            return `hello ${message.value}`
+          }
+          return message.value + ' from computed!'
+        })
+        message.value +=  'hello'
+        message.value = 'hello'
+        return{
+          message, appendItems, changeColor, color, age, canDrink
         }
-      },
-    };
+       },
+     };
+
     createApp(App).mount('#app');
   </script>
+  <style>
+    .text-red{
+      color: red;
+    }
+    .text-green{
+      color:green;
+    }
+  </style>
 </body>
 
 </html>

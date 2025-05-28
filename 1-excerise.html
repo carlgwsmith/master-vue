@@ -20,77 +20,66 @@
     .cant {
       color: red;
     }
+    .parent {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+grid-template-rows: repeat(3, 1fr);
+grid-column-gap: 20px;
+grid-row-gap: 20px;
+}
+.photoframe{
+  border:3px solid gray;
+  padding: 30px;
+  background-color: #f4f4f4;;
+}
   </style>
   <script src="https://unpkg.com/vue@3.4.0"></script>
 </head>
 
 <body>
   <div id="app">
-    <div>
-      <!-- What needs to happen here? -->
-      {{areWeDone ? 'Your score: ' + score : 'Next question'}}
-    </div>
-    <div>
-      <!-- The question goes here -->
-      {{question}}
-    </div>
-    <div>
-      <!-- Connect the input? -->
-      <input v-model="answer" />
+    <input type="text" v-model="photoUrl">
+    <button @click="addPhoto">Add photo</button>
+    <div v-if="photos.length > 0" class="parent">
+      <div v-for="photo in photos" :key="photo.id" class="photoframe">
+        <img :src="photo.url" style="width:200px"/>
+        <div>
+          <button @click="likePhoto(photo)">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="32px" width="32px" xmlns="http://www.w3.org/2000/svg"><path d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.6c53.5-54.7 64.7-157.9-10.6-221.3zm-23.6 187.5L259.4 430.5c-2.4 2.4-4.4 2.4-6.8 0L77.2 251.8c-36.5-37.2-43.9-107.6 7.3-150.7 38.9-32.7 98.9-27.8 136.5 10.5l35 35.7 35-35.7c37.8-38.5 97.8-43.2 136.5-10.6 51.1 43.1 43.5 113.9 7.3 150.8z" :fill="photo.liked ? 'red' : 'black'"></path></svg>
+          </button>
+          <button @click="removePhoto(photo)">delete</button>
+        </div>
+      </div>
     </div>
   </div>
   <script>
     const { createApp, ref, computed } = Vue;
     const App = {
       setup() {
-        const questions = [
-          'How much is 2+2',
-          'How much is 3*5+1',
-          'What is the rest from 3/1'
-        ];
-        const answers = [
-          '4',
-          '16',
-          '1'
-        ];
-        const score = ref(0);
-        const current = ref(0);
-        const answer = ref(null);
-        const question = computed(
-          () => questions[current.value]
-        );
-        const rightAnswer = computed(
-          () => answers[current.value]
-        );
-        const areWeDone = computed(
-          () => questions.length === current.value
-        );
-        // This function does the actual check
-        // 1) Is the currently entered answer the expected one?
-        // 2) What needs to be happen with current question number?
-        // 3) What about the score, if the answer was right?
-        // 4) Remember, v-model uses two-way binding, what can you do here with the answer reactive property?
-        // 5) Should we check if the question was the last one? What needs to happen then?
-        const check = () => {
-          console.log('Check!');
-          // Checking if the answer is correct here?
-          if (answer.value === rightAnswer.value) {
-            score.value++;
-          }
-
-          answer.value = null; // What should happen with the currently entered answer?
-          current.value++; // What about current question?
-          // Should we check for something else, is this a last question maybe?
-          if (areWeDone.value) {
-            // What needs to happen here if that's the last question?
-            clearInterval(interval);
-          }
+        const photoUrl = ref('')
+        const photos = ref([])
+        const addPhoto = () => {
+          photos.value.push({url: photoUrl.value, liked: false, id: photos.value.length + 1})
         }
-        // Starting the interval
-        const interval = setInterval(check, 4000);
-        // What needs to be returned here? Remember, what needs to happen for the template to use a reactive or computed property?
+        const removePhoto = (photo) => {
+          photos.value.forEach((item, index) => {
+            if(item.id === photo.id){
+              photos.value.splice(index, 1)
+            }
+          });
+        }
+        const likePhoto = (photo) => {
+          photos.value.forEach(item => {
+            if(item.id === photo.id){
+              item.liked = !item.liked
+            }
+            console.log(photo)
+          });
+        }
+        
         return {
-          question, answer, areWeDone, score
+          /* What's missing here? */
+          addPhoto, photoUrl, photos, removePhoto, likePhoto
         }
       },
     };
