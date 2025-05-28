@@ -1,17 +1,34 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import {ref} from 'vue'
+import type {Tab,TabKey} from './types'
+import TabLink from './components/TabLink.vue'
+const tabs: Tab[]=[
+  {
+    key:'General',
+    label:'General'
+  },
+  {
+    key:'Notifications',
+    label:'Notifications'
+  },
+  {
+    key:'Privacy',
+    label:'Privacy'
+  }
+]
+
+const currentTab = ref<TabKey>('General' as TabKey)
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <!-- <TabLink/> -->
+  <div class="max-w-2xl mx-auto px-4">
+        <nav class="font-medium text-slate-500 border-gray-500">
+            <ul class="flex space-x-8 flex-wrap">
+                <li v-for="tab in tabs" :key="tab.key"><TabLink :tab="tab" :currentTab="currentTab" @click="()=>{currentTab = tab.key}"/></li>
+            </ul>
+        </nav>
+    </div>
 </template>
 
 <style scoped>
