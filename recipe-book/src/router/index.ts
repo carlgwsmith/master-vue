@@ -1,52 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
-import FavoritesView from '@/views/FavoritesView.vue';
-import AddRecipeView from '@/views/AddRecipeView.vue';
-import RecipeView from '@/views/RecipeView.vue';
-import NotFoundView from '@/views/NotFoundView.vue';
-import EditRecipeView from '@/views/EditRecipeView.vue';
+import { createWebHistory, createRouter } from 'vue-router'
 
-// mydomain.com
-// mydomain.com/app
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import FavoritesView from '../views/FavoritesView.vue'
+import AddRecipeView from '../views/AddRecipeView.vue'
+import RecipeView from '../views/RecipeView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
+import EditRecipe from '../views/EditRecipe.vue'
+
+const routes = [
+  { name: 'home', path: '/', component: HomeView },
+  { path: '/home', redirect: '/' },
+  { name: 'about', path: '/about', component: AboutView },
+  { name: 'favorites', path: '/favorites', component: FavoritesView },
+  { name: 'addrecipe', path: '/addrecipe', component: AddRecipeView },
+  { name: 'editrecipe', path: '/editrecipe/:id', component: EditRecipe },
+  {name: 'recipe', path: '/recipe/:id', alias:'/meal/:id', component: RecipeView},
+//   { path: '/:catchAll(.*)', redirect: '/' },
+  {path:'/:pathMatch(.*)*', name:'not-found', component: NotFoundView}
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/home',
-      redirect: '/'
-    },
-    {
-      path: '/favorites',
-      name: 'favorites',
-      component: FavoritesView
-    },
-    {
-      path: '/add-recipe',
-      name: 'add-recipe',
-      component: AddRecipeView
-    },
-    {
-      path: '/recipe/:id/edit',
-      name: 'edit-recipe',
-      component: EditRecipeView
-    },
-    {
-      path: '/recipe/:id',
-      name: 'recipe',
-      component: RecipeView,
-      alias: '/meal/:id'
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      name: 'not-found',
-      component: NotFoundView
-    }
-  ]
-});
+  routes,
+})
 
-export default router;
+export default router

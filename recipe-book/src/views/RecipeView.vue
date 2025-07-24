@@ -1,30 +1,38 @@
-<template>
-  <div>
-    <h1 class="text-2xl font-bold mb-4">{{ recipe?.name }}</h1>
-    <p class="mb-4">{{ recipe?.description }}</p>
-    <div class="flex items-center gap-4">
-      <RouterLink :to="{ name: 'edit-recipe', params: { id: recipe?.id } }" class="hover:underline"
-        >Edit</RouterLink
-      >
-      <button
-        v-if="recipe"
-        @click="recipeStore.toggleFavorite(recipe.id)"
-        class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-      >
-        {{ isFavorite ? 'Remove from favorites' : 'Add to favorites' }}
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { useRecipeStore } from '@/stores/recipe';
-import { computed } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import {  computed } from 'vue';
+import { useRoute, RouterLink } from 'vue-router';
+import { useRecipeStore } from '../stores/recipeStore';
 
-const route = useRoute();
-const recipeStore = useRecipeStore();
+const store = useRecipeStore()
 
-const recipe = computed(() => recipeStore.getRecipeById(route.params.id as string));
-const isFavorite = computed(() => (recipe.value ? recipeStore.isFavorite(recipe.value.id) : false));
+const route = useRoute()
+
+const recipe = computed(() => store.getRecipeById(route.params.id as string))
+
 </script>
+<template>
+    <div class="px-5">
+    <h1 class="text-[24px] font-bold">{{ recipe?.title }}</h1>
+    <div class="pt-5">
+        <p class="font-medium">ingredients:</p>
+        <hr>
+        <ul class="list-disc list-inside">
+            <li v-for="ingredient in recipe?.ingredients">{{ ingredient }}</li>
+        </ul>
+    </div>
+
+    <div class="pt-5">
+        <p class="font-medium">instructions:</p>
+        <hr>
+        <ol class="list-inside list-decimal">
+            <li v-for="instruction in recipe?.instructions">{{ instruction }}</li>
+        </ol>
+    </div>
+    <nav class="mt-5">
+        <ul><li>
+            <RouterLink :to="{name:'recipe',params:{id:1}}">rECIPE1</RouterLink>
+            <RouterLink :to="{name:'recipe',params:{id:2}}">Recipe2</RouterLink>
+        </li></ul>
+    </nav>
+    </div>
+</template>

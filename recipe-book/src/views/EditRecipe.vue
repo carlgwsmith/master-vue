@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRecipeStore} from '../stores/recipeStore';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+
 const router = useRouter();
+const route = useRoute()
+
 const navigateToRecipe =(id: string)=>{
     router.push(
         {name: 'recipe',
@@ -16,7 +19,7 @@ const ingredients=ref()
 const instructions = ref()
 
 const recipeStore = useRecipeStore()
-const recipesId = ref(Date.now().toString())
+const recipesId = ref()
 
 const parseInstructions = computed(()=>{
     return instructions.value.split('. ')
@@ -30,11 +33,22 @@ const parseIngredients = computed(()=>{
 const submitRecipe = ()=>{
     const newRecipe = {title: title.value, ingredients: parseIngredients.value, instructions: parseInstructions.value, id: recipesId.value}
 
-    recipeStore.addRecipe(newRecipe)
+    recipeStore.editRecipe(newRecipe)
     navigateToRecipe(recipesId.value)
 }
 
-
+onMounted(()=>{
+    const id = route.params.id
+    const recipe = recipeStore.getRecipeById(id as string);
+    if(recipe){
+        title.value = recipe.title
+        ingredients.value = recipe.ingredients.join(', ')
+        instructions.value = recipe.instructions.join('. ')
+        recipesId.value = recipe.id
+    } else{
+        router.push({name: 'not-found'})
+    }
+})
 </script>
 <template>
 <div class="flex justify-center pt-10">

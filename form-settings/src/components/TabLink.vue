@@ -19,7 +19,7 @@ const handleClick = () => {
 }
 </script>
 <template>
-    <div @click="handleClick" :class="[isCurrent ? 'underline font-bold': '', 'cursor-pointer']">
+    <button @click="handleClick" :class="[isCurrent ? 'text-blue-500 border-blue-500': 'border-slate-100', 'cursor-pointer pb-2 border-b-4']">
         {{tab.label}}
-    </div>
+    </button>
 </template>
