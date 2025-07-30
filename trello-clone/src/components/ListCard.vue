@@ -2,8 +2,6 @@
 import Draggable from 'vuedraggable';
 import Child from './child.vue';
 import type { Card, List } from '../types.ts';
-import { add } from 'date-fns';
-import { open } from 'fs';
 
 defineEmits(['openModal']);
 

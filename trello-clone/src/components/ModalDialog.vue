@@ -10,9 +10,6 @@ const props = defineProps<{
 defineEmits(['close', 'addCard'])
 
 
-const cardTitle = ref('');
-const cardDescription = ref('');
-
 const localCard = ref<Card>({
   id: 0,
   title: '',
@@ -20,14 +17,12 @@ const localCard = ref<Card>({
 });
 
 watch(() => props.card, (newCard) => {
+  console.log(props.mode)
   if (newCard) {
     localCard.value = { ...newCard };
-    cardTitle.value = newCard.title;
-    cardDescription.value = newCard.description;
   } else {
+    console.log(props.card)
     localCard.value = { id: 0, title: '', description: '' };
-    cardTitle.value = '';
-    cardDescription.value = '';
   }
 }, { immediate: true });
 

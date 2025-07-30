@@ -36,33 +36,34 @@ const lists = reactive<List[]>([
 const isModalOpen = ref(false);
 function openModal(listIndex: number, card?: Card) {
   editingListIndex.value = listIndex;
-  editingCard.value = card || null;
-  isModalOpen.value = !isModalOpen.value;
-
-  console.log(listIndex, card, editingCard.value, isModalOpen.value);
+  editingCard.value = card === undefined ? null : card;
+  isModalOpen.value = true;
 }
 function addCard(card: Card) {
-  console.log('Card added:', card);
   const listIndex = editingListIndex.value;
   if (listIndex == null) {
    return
   }
   if(modalMode.value === 'edit') {
-    console.log('Editing card:', editingCard.value);
     // Logic to update the card if in edit mode
     const index = lists[listIndex].cards.findIndex((c: Card) => c.id === editingCard.value?.id);
     if (index !== -1) {
-      lists[listIndex].cards[index] = { ...card, id: editingCard.value?.id }; // Preserve the ID
+      lists[listIndex].cards[index] = { ...card, id: editingCard.value!.id }; // Preserve the ID
     }
   } else {
     console.log('Adding new card');
     // Logic to add a new card
     card.id = Date.now(); // Simple ID generation
      lists[listIndex].cards.push(card);
-     console.log(card, lists)
   }
   // Logic to add the card to the appropriate list
-  isModalOpen.value = false; // Close modal after adding card
+  closeModal(); // Close modal after adding card
+}
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  editingCard.value = null;
+  editingListIndex.value = null;
 }
 </script>
 
@@ -72,7 +73,7 @@ function addCard(card: Card) {
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
       <ListCard @openModal="openModal" :lists="lists"/>
-      <ModalDialog :showModal="isModalOpen" :card="editingCard" :mode="modalMode" @close="openModal" @addCard="addCard"/>
+      <ModalDialog :showModal="isModalOpen" :card="editingCard" :mode="modalMode" @close="closeModal" @addCard="addCard"/>
     </div>
   </header>
 
