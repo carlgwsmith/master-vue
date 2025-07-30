@@ -1,9 +1,15 @@
 <script setup lang="ts">
-import {computed, reactive, ref} from 'vue'
-import Draggable from 'vuedraggable'
+import HelloWorld from './components/HelloWorld.vue'
+import ListCard from './components/ListCard.vue';
 import ModalDialog from './components/ModalDialog.vue';
-import { type Card, type List } from './types';
+import { computed, reactive } from 'vue';
+import type { Card, List } from './types';
 
+import { ref } from 'vue';
+
+const editingCard = ref<Card | null>(null);
+const editingListIndex = ref<number | null>(null);
+const modalMode = computed(() => editingCard.value ? 'edit' : 'add');
 const lists = reactive<List[]>([
   {
     id: 1,
@@ -27,72 +33,47 @@ const lists = reactive<List[]>([
     cards: [{ id: 5, title: 'Task 5', description: 'Description for Task 5' }]
   }
 ])
-const isModalOpen = ref(false)
-const editingCard = ref<Card | null>(null)
-const editingListIndex = ref<number | null>(null)
-const modalMode = computed(() => editingCard.value === null ? 'add' : 'edit')
+const isModalOpen = ref(false);
+function openModal(listIndex: number, card?: Card) {
+  editingListIndex.value = listIndex;
+  editingCard.value = card || null;
+  isModalOpen.value = !isModalOpen.value;
 
-const openModal = (listIndex: number, card?: Card) => {
-  editingListIndex.value = listIndex
-  editingCard.value = card === undefined ? null : card
-  isModalOpen.value = true
+  console.log(listIndex, card, editingCard.value, isModalOpen.value);
 }
-
-const saveCard = (card: Card) => {
-  if (editingListIndex.value === null) {
-    return
+function addCard(card: Card) {
+  console.log('Card added:', card);
+  const listIndex = editingListIndex.value;
+  if (listIndex == null) {
+   return
   }
-  if (modalMode.value === 'add') {
-    // Adding
-    const newId = Math.max(
-      ...lists.flatMap(list => list.cards.map(c => c.id))
-    )
-    lists[editingListIndex.value].cards.push(
-      {...card, id: newId}
-    )
-  } else {
-    // Modify
-    const cardIndex = lists[editingListIndex.value]
-      .cards.findIndex(
-        (cardOnList) => cardOnList.id === card.id
-      )
-    if (cardIndex !== -1) {
-      lists[editingListIndex.value].cards[cardIndex] = card
+  if(modalMode.value === 'edit') {
+    console.log('Editing card:', editingCard.value);
+    // Logic to update the card if in edit mode
+    const index = lists[listIndex].cards.findIndex((c: Card) => c.id === editingCard.value?.id);
+    if (index !== -1) {
+      lists[listIndex].cards[index] = { ...card, id: editingCard.value?.id }; // Preserve the ID
     }
+  } else {
+    console.log('Adding new card');
+    // Logic to add a new card
+    card.id = Date.now(); // Simple ID generation
+     lists[listIndex].cards.push(card);
+     console.log(card, lists)
   }
-  closeModal()
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-  editingListIndex.value = null
-  editingCard.value = null
+  // Logic to add the card to the appropriate list
+  isModalOpen.value = false; // Close modal after adding card
 }
 </script>
 
 <template>
-  <main class="p-5 font-sans">
-    <div class="flex gap-5 py-5 overflow-x-auto">
-      <div class="bg-gray-100 p-3 rounded-lg min-w-[250px] flex flex-col" v-for="(list, listIndex) in lists" :key="list.id">
-        <h2 class="font-medium mb-2">{{ list.title }}</h2>
-        
-        <Draggable :list="list.cards" group="cards" item-key="id">
-          <template #item="{element}">
-            <div @click="openModal(listIndex, element)" class="bg-white p-2 my-2 rounded shadow cursor-pointer">
-              <span class="text-sm font-medium">{{ element.title }}</span>
-              <p class="text-xs text-gray-400">
-                {{ element.description }}
-              </p>
-            </div>
-          </template>
-        </Draggable>
+  <header>
 
-        <button class="w-full bg-transparent rounded hover:bg-white text-gray-500 p-2 text-left mt-2 text-sm font-medium" @click="openModal(listIndex)">
-          + Add Card
-        </button>
-      </div>
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
+      <ListCard @openModal="openModal" :lists="lists"/>
+      <ModalDialog :showModal="isModalOpen" :card="editingCard" :mode="modalMode" @close="openModal" @addCard="addCard"/>
     </div>
+  </header>
 
-    <ModalDialog :is-open="isModalOpen" :card="editingCard" :mode="modalMode" @close="closeModal" @save="saveCard" />
-  </main>
 </template>

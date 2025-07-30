@@ -1,15 +1,23 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 interface Item {
   id: number;
   name: string;
 }
-defineProps<{items: Item[]}>()
+defineProps<{
+  items: Item[]
+}>()
 </script>
 
 <template>
-  <ul>
-    <li v-for="item in items" :key="item.id">
-      <slot name="item" :item="item"></slot>
-    </li>
-  </ul>
+    <ul>
+        <li v-for="item in items" :key="item.id">
+            <slot name="item" :item="item">
+                {{ item.name }}
+            </slot>
+        </li>
+    </ul>
 </template>
+
+<style scoped>
+
+</style>
